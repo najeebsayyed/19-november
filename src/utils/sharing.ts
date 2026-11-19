@@ -1,6 +1,6 @@
 // Centralized social sharing utilities
 
-export const CANONICAL_PRODUCTION_URL = 'https://19novtrauma.vercel.app';
+export const CANONICAL_PRODUCTION_URL = 'https://19november.vercel.app';
 
 export function getShareUrl(): string {
   if (typeof window !== 'undefined') {
