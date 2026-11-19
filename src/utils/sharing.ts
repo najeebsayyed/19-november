@@ -1,11 +1,15 @@
-// Social sharing utilities
+// Centralized social sharing utilities
+
+export const CANONICAL_PRODUCTION_URL = 'https://19novtrauma.vercel.app';
 
 export function getShareUrl(): string {
   if (typeof window !== 'undefined') {
-    // Return current origin or cleaner canonical URL if on localhost or custom domain
-    return window.location.origin + window.location.pathname;
+    const origin = window.location.origin;
+    if (origin && !origin.includes('localhost') && !origin.includes('127.0.0.1')) {
+      return origin + window.location.pathname;
+    }
   }
-  return 'https://19novtrauma.vercel.app';
+  return CANONICAL_PRODUCTION_URL;
 }
 
 export interface ShareDataPayload {
@@ -19,10 +23,9 @@ export async function shareContent(payload: ShareDataPayload): Promise<{ success
   const url = payload.url || getShareUrl();
   const fullText = `${payload.text}\n\nCheck yours here: ${url}`;
 
-  // Try Native Web Share API first
+  // 1. Try Native Web Share API first
   if (typeof navigator !== 'undefined' && navigator.share) {
     try {
-      // Check if files can be shared
       if (payload.blob && navigator.canShare && navigator.canShare({ files: [new File([payload.blob], '19-november.png', { type: 'image/png' })] })) {
         const file = new File([payload.blob], '19-november.png', { type: 'image/png' });
         await navigator.share({
@@ -40,21 +43,21 @@ export async function shareContent(payload: ShareDataPayload): Promise<{ success
       });
       return { success: true, method: 'native' };
     } catch (err: unknown) {
-      // If user cancelled, don't fallback to clipboard error
       if (err instanceof Error && err.name === 'AbortError') {
+        // User voluntarily cancelled the share sheet
         return { success: false, method: 'native' };
       }
     }
   }
 
-  // Fallback: Copy to clipboard
+  // 2. Fallback: Copy to clipboard
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(fullText);
       return { success: true, method: 'clipboard' };
     }
   } catch {
-    // ignore
+    // clipboard access denied or unsupported
   }
 
   return { success: false, method: 'fallback' };

@@ -12,7 +12,9 @@ import {
   Check, 
   Sparkles,
   MessageCircle,
-  Copy
+  Copy,
+  ArrowRight,
+  ArrowLeft
 } from 'lucide-react';
 import { XIcon } from '../components/Icons';
 import { downloadTraumaResultCard } from '../utils/resultCard';
@@ -20,56 +22,59 @@ import { openWhatsAppShare, openTwitterShare, shareContent } from '../utils/shar
 import confetti from 'canvas-confetti';
 
 interface TraumaAssessmentProps {
-  persistedScore: number | null;
-  onSaveResult: (score: number, category: TraumaResult['category'], answers: Record<number, number>) => void;
+  persistedResult?: TraumaResult;
+  onSaveResult: (result: TraumaResult, answers: Record<string, string>) => void;
   onPlayClick: () => void;
   onPlayWicket: () => void;
   onPlayCelebration: () => void;
 }
 
 export const TraumaAssessment: React.FC<TraumaAssessmentProps> = ({
-  persistedScore,
+  persistedResult,
   onSaveResult,
   onPlayClick,
   onPlayWicket,
   onPlayCelebration,
 }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
-  const [currentResult, setCurrentResult] = useState<TraumaResult | null>(() => {
-    if (persistedScore !== null) {
-      return calculateTraumaResult(persistedScore);
-    }
-    return null;
-  });
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
+  const [currentResult, setCurrentResult] = useState<TraumaResult | null>(persistedResult || null);
   const [copied, setCopied] = useState<boolean>(false);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   const currentQ = TRAUMA_QUESTIONS[currentIndex];
   const progressPercent = Math.round(((currentIndex) / TRAUMA_QUESTIONS.length) * 100);
+  const currentAnswerId = selectedAnswers[currentQ.id];
 
-  const handleSelectOption = (optionIndex: number) => {
+  const handleSelectOption = (optionId: string) => {
     onPlayClick();
-    const updatedAnswers = { ...selectedAnswers, [currentQ.id]: optionIndex };
-    setSelectedAnswers(updatedAnswers);
+    setSelectedAnswers((prev) => ({
+      ...prev,
+      [currentQ.id]: optionId,
+    }));
+  };
+
+  const handleContinue = () => {
+    if (!currentAnswerId) return;
+    onPlayClick();
 
     if (currentIndex < TRAUMA_QUESTIONS.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      setCurrentIndex((prev) => prev + 1);
     } else {
-      // Calculate final score
-      // Total max weight = 5 questions * 3 = 15
+      // Calculate final score across all 5 questions
       let totalWeight = 0;
       TRAUMA_QUESTIONS.forEach((q) => {
-        const chosenIdx = updatedAnswers[q.id] ?? 0;
-        totalWeight += q.options[chosenIdx]?.weight ?? 0;
+        const chosenId = selectedAnswers[q.id];
+        const chosenOpt = q.options.find((opt) => opt.id === chosenId);
+        totalWeight += chosenOpt ? chosenOpt.weight : 0;
       });
 
-      const calculatedScore = Math.round((totalWeight / 15) * 100);
-      const resultObj = calculateTraumaResult(calculatedScore);
+      const normalizedScore = Math.round((totalWeight / 15) * 100);
+      const resultObj = calculateTraumaResult(normalizedScore);
       setCurrentResult(resultObj);
-      onSaveResult(calculatedScore, resultObj.category, updatedAnswers);
+      onSaveResult(resultObj, selectedAnswers);
 
-      if (calculatedScore >= 75) {
+      if (normalizedScore >= 75) {
         onPlayWicket();
       } else {
         onPlayCelebration();
@@ -85,6 +90,13 @@ export const TraumaAssessment: React.FC<TraumaAssessmentProps> = ({
       } catch {
         // ignore
       }
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      onPlayClick();
+      setCurrentIndex((prev) => prev - 1);
     }
   };
 
@@ -107,7 +119,7 @@ export const TraumaAssessment: React.FC<TraumaAssessmentProps> = ({
   };
 
   const shareText = currentResult
-    ? `I just discovered my 19 November cricket trauma level: ${currentResult.category} (${currentResult.score}%) 😭\n\n"${currentResult.diagnosis.slice(0, 100)}..."`
+    ? `I just checked my 19 November trauma level: ${currentResult.band} (${currentResult.score}%) 😭\n\n"${currentResult.diagnosis.slice(0, 95)}..."`
     : 'Check your 19 November cricket trauma level!';
 
   const handleCopy = async () => {
@@ -123,7 +135,7 @@ export const TraumaAssessment: React.FC<TraumaAssessmentProps> = ({
   };
 
   return (
-    <section id="assessment" className="py-24 px-4 relative overflow-hidden bg-[#030712]">
+    <section id="assessment" className="py-24 px-4 relative overflow-hidden bg-[#030712] scroll-mt-20">
       {/* Glow aura */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-red-600/5 rounded-full blur-[120px] pointer-events-none" />
 
@@ -178,11 +190,11 @@ export const TraumaAssessment: React.FC<TraumaAssessmentProps> = ({
               {/* Multiple Choice Options */}
               <div className="space-y-3">
                 {currentQ.options.map((opt, oIdx) => {
-                  const isSelected = selectedAnswers[currentQ.id] === oIdx;
+                  const isSelected = currentAnswerId === opt.id;
                   return (
                     <button
-                      key={opt.text}
-                      onClick={() => handleSelectOption(oIdx)}
+                      key={opt.id}
+                      onClick={() => handleSelectOption(opt.id)}
                       className={`w-full text-left p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group ${
                         isSelected
                           ? 'bg-sky-500/15 border-sky-400 text-white shadow-lg shadow-sky-500/20'
@@ -199,28 +211,45 @@ export const TraumaAssessment: React.FC<TraumaAssessmentProps> = ({
                           </div>
                         )}
                       </div>
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-400 group-hover:border-sky-400 group-hover:text-sky-400 transition-colors">
-                        {String.fromCharCode(65 + oIdx)}
+                      <div className={`flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold transition-colors ${
+                        isSelected 
+                          ? 'bg-sky-500 border-sky-400 text-white' 
+                          : 'border-slate-700 text-slate-400 group-hover:border-sky-400 group-hover:text-sky-400'
+                      }`}>
+                        {isSelected ? <Check className="w-4 h-4" /> : String.fromCharCode(65 + oIdx)}
                       </div>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Back / Navigation Helper */}
-              {currentIndex > 0 && (
-                <div className="mt-6 flex justify-start">
+              {/* Navigation Controls: Back & Continue */}
+              <div className="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                {currentIndex > 0 ? (
                   <button
-                    onClick={() => {
-                      onPlayClick();
-                      setCurrentIndex(currentIndex - 1);
-                    }}
-                    className="text-xs text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer"
+                    onClick={handlePrevious}
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer transition-colors"
                   >
-                    ← Previous Question
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Previous</span>
                   </button>
-                </div>
-              )}
+                ) : (
+                  <div />
+                )}
+
+                <button
+                  disabled={!currentAnswerId}
+                  onClick={handleContinue}
+                  className={`px-7 py-3 rounded-xl font-display font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer ${
+                    currentAnswerId
+                      ? 'bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white shadow-lg shadow-sky-500/20 hover:scale-[1.02] active:scale-[0.98]'
+                      : 'bg-slate-800/50 text-slate-500 border border-slate-800 cursor-not-allowed opacity-60'
+                  }`}
+                >
+                  <span>{currentIndex === TRAUMA_QUESTIONS.length - 1 ? 'See Diagnosis' : 'Continue'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           ) : (
             /* Results Screen */
@@ -246,7 +275,7 @@ export const TraumaAssessment: React.FC<TraumaAssessmentProps> = ({
                 </div>
 
                 <h3 className="font-display font-black text-2xl sm:text-4xl text-white tracking-wide">
-                  {currentResult.category}
+                  {currentResult.band}
                 </h3>
                 <p className="text-slate-400 text-sm font-semibold mt-1">
                   {currentResult.title}

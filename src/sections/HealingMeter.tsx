@@ -72,7 +72,7 @@ export const HealingMeter: React.FC<HealingMeterProps> = ({
   };
 
   return (
-    <section id="healing" className="py-24 px-4 relative overflow-hidden bg-gradient-to-b from-[#030712] via-[#090e1c] to-[#030712]">
+    <section id="healing" className="py-24 px-4 relative overflow-hidden bg-gradient-to-b from-[#030712] via-[#090e1c] to-[#030712] scroll-mt-20">
       {/* Background radial glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -125,6 +125,7 @@ export const HealingMeter: React.FC<HealingMeterProps> = ({
                 max={100}
                 value={val}
                 onChange={handleChange}
+                aria-label="Healing progress percentage"
                 className="w-full h-4 bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-400 hover:accent-emerald-300 transition-all shadow-inner"
               />
             </div>
@@ -159,7 +160,11 @@ export const HealingMeter: React.FC<HealingMeterProps> = ({
 
           {/* Toast on Declaration */}
           {showToast && (
-            <div className="mt-6 p-4 rounded-xl bg-emerald-950/80 border border-emerald-600/80 text-emerald-200 text-xs sm:text-sm font-semibold text-center animate-in fade-in slide-in-from-bottom-2">
+            <div 
+              role="status" 
+              aria-live="polite" 
+              className="mt-6 p-4 rounded-xl bg-emerald-950/80 border border-emerald-600/80 text-emerald-200 text-xs sm:text-sm font-semibold text-center animate-in fade-in slide-in-from-bottom-2"
+            >
               🎉 Official certificate updated: Recovery score of {val}% has been stamped and saved!
             </div>
           )}

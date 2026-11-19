@@ -110,7 +110,7 @@ export const MemeGenerator: React.FC<MemeGeneratorProps> = ({
   };
 
   return (
-    <section id="memes" className="py-24 px-4 relative overflow-hidden bg-[#030712]">
+    <section id="memes" className="py-24 px-4 relative overflow-hidden bg-[#030712] scroll-mt-20">
       {/* Glow */}
       <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 

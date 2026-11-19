@@ -1,4 +1,5 @@
-import { Heart, ArrowUp, ShieldAlert } from 'lucide-react';
+import { Heart, ArrowUp, ShieldAlert, Globe, ExternalLink } from 'lucide-react';
+import { XIcon, LinkedinIcon } from './Icons';
 
 interface FooterProps {
   onPlayClick: () => void;
@@ -59,11 +60,73 @@ export const Footer = ({ onPlayClick }: FooterProps) => {
           <ArrowUp className="w-4 h-4" />
         </button>
 
+        {/* Tasteful Developer Attribution (Phase 6) */}
+        <div className="w-full max-w-xl py-6 mb-6 border-t border-b border-slate-800/80 flex flex-col items-center">
+          <div className="text-sm font-semibold text-slate-200 flex items-center gap-1.5 mb-1.5">
+            <span>Made with</span>
+            <Heart className="w-4 h-4 text-rose-500 fill-rose-500 inline-block animate-pulse" />
+            <span>by</span>
+            <a 
+              href="https://najeebsayyed.in" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="font-bold text-sky-400 hover:text-sky-300 underline underline-offset-4 transition-colors"
+            >
+              Najeeb Sayyed
+            </a>
+          </div>
+
+          <p className="text-xs text-slate-400 italic mb-4">
+            "Built for every Indian cricket fan who still remembers 19 November."
+          </p>
+
+          {/* Social Profiles & Contact */}
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
+            <a
+              href="https://najeebsayyed.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all"
+            >
+              <Globe className="w-3.5 h-3.5 text-sky-400" />
+              <span>Portfolio</span>
+            </a>
+
+            <a
+              href="https://www.linkedin.com/in/najeebsayyed/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all"
+            >
+              <LinkedinIcon className="w-3.5 h-3.5 text-blue-400" />
+              <span>LinkedIn</span>
+            </a>
+
+            <a
+              href="https://x.com/iNajeebSayyed"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all"
+            >
+              <XIcon className="w-3.5 h-3.5 text-slate-300" />
+              <span>X (Twitter)</span>
+            </a>
+
+            <a
+              href="https://najeebsayyed.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-sky-300 transition-all text-[11px]"
+            >
+              <span>Contact Developer</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        </div>
+
         {/* Creator tagline */}
-        <div className="text-xs text-slate-400 flex items-center gap-1.5">
-          <span>Created with</span>
-          <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-          <span>tears, chai, and unending love for Indian cricket.</span>
+        <div className="text-xs text-slate-500">
+          <span>Created with tears, chai, and unending love for Indian cricket. © {new Date().getFullYear()}</span>
         </div>
       </div>
     </footer>

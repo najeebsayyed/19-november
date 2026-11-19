@@ -7,7 +7,7 @@ export interface MemeRenderOptions {
   fontSize?: number;
 }
 
-// Wrap text to fit canvas width
+// Wrap text within max width
 function wrapText(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -60,10 +60,10 @@ export function drawMemeOnCanvas(
   ctx.font = `900 ${baseFontSize}px 'Space Grotesk', Impact, -apple-system, sans-serif`;
   ctx.lineWidth = Math.max(4, Math.floor(baseFontSize * 0.16));
   ctx.lineJoin = 'round';
-  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowColor = 'rgba(0,0,0,0.85)';
   ctx.shadowBlur = 10;
 
-  const maxTextWidth = width * 0.92;
+  const maxTextWidth = width * 0.90;
 
   if (options.topText.trim()) {
     const topLines = wrapText(ctx, options.topText.toUpperCase(), maxTextWidth);
@@ -95,19 +95,19 @@ export function drawMemeOnCanvas(
 
   // 4. Draw Official Watermark Banner
   ctx.save();
-  ctx.fillStyle = 'rgba(3, 7, 18, 0.85)';
-  ctx.fillRect(0, height - 36, width, 36);
+  ctx.fillStyle = 'rgba(3, 7, 18, 0.90)';
+  ctx.fillRect(0, height - 38, width, 38);
 
   ctx.fillStyle = '#38bdf8';
   ctx.font = "bold 13px 'Space Grotesk', -apple-system, sans-serif";
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🏏 19 NOVEMBER — The Trauma Center', 20, height - 18);
+  ctx.fillText('🏏 19 NOVEMBER — The Trauma Center', 20, height - 19);
 
   ctx.fillStyle = '#94a3b8';
   ctx.textAlign = 'right';
   ctx.font = "12px 'Space Grotesk', sans-serif";
-  ctx.fillText('10 WINS. 1 FINAL. NO RECOVERY.', width - 20, height - 18);
+  ctx.fillText('10 WINS. 1 FINAL. STILL NOT RECOVERED.', width - 20, height - 19);
   ctx.restore();
 }
 
@@ -352,7 +352,7 @@ function drawTemplateArtwork(
   }
 }
 
-export function downloadMemeImage(canvas: HTMLCanvasElement, filename: string = '19-november-trauma-meme.png') {
+export function downloadMemeImage(canvas: HTMLCanvasElement, filename: string = '19-november-trauma-meme.png'): boolean {
   try {
     const dataUrl = canvas.toDataURL('image/png', 1.0);
     const link = document.createElement('a');

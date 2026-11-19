@@ -54,10 +54,10 @@ export function generateTraumaResultCardBlob(
     ctx.textAlign = 'center';
     ctx.fillText(`${result.score}%`, w / 2, 160);
 
-    // Badge / Category Title
+    // Badge / Band Title
     ctx.fillStyle = '#f8fafc';
     ctx.font = '900 32px "Space Grotesk", sans-serif';
-    ctx.fillText(result.category, w / 2, 220);
+    ctx.fillText(result.band, w / 2, 220);
 
     // Subtitle / Title
     ctx.fillStyle = '#94a3b8';

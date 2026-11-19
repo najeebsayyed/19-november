@@ -12,44 +12,55 @@ export interface Achievement {
   description: string;
   icon: string;
   category: 'assessment' | 'quiz' | 'meme' | 'loyalty';
-  unlockedAt?: string | null;
+}
+
+export interface AchievementProgress {
+  id: AchievementId;
+  unlockedAt: string; // ISO date string
 }
 
 export interface TraumaOption {
+  id: string;
   text: string;
-  weight: number; // 0 to 3 or 0 to 20
+  weight: 0 | 1 | 2 | 3;
   subtext?: string;
 }
 
 export interface TraumaQuestion {
-  id: number;
+  id: string;
   question: string;
   context?: string;
   options: TraumaOption[];
 }
 
-export type TraumaCategory = 
+export type TraumaBand = 
   | 'SLIGHTLY TRAUMATIZED'
   | 'EMOTIONALLY WOUNDED'
   | 'PERMANENTLY DAMAGED'
   | 'BEYOND RECOVERY';
 
 export interface TraumaResult {
-  score: number;
-  category: TraumaCategory;
+  score: number; // 0 to 100
+  band: TraumaBand;
   title: string;
   diagnosis: string;
   prescription: string;
   color: string;
   badge: string;
   icon: string;
+  completedAt: string;
+}
+
+export interface QuizOption {
+  id: string;
+  text: string;
 }
 
 export interface QuizQuestion {
-  id: number;
+  id: string;
   question: string;
-  options: string[];
-  correctIndex: number;
+  options: QuizOption[];
+  correctAnswerId: string;
   explanation: string;
   historicalContext: string;
 }
@@ -61,6 +72,7 @@ export interface QuizResult {
   tierTitle: string;
   description: string;
   memeReaction: string;
+  completedAt: string;
 }
 
 export interface MemeTemplate {
@@ -75,20 +87,18 @@ export interface MemeTemplate {
   illustrationType: 'dream_vs_nightmare' | 'flashback' | 'batting_collapse' | 'travis_head' | 'before_after' | 'scriptwriter';
 }
 
-export interface UserProgress {
-  version: number;
-  traumaScore: number | null;
-  traumaCategory: TraumaCategory | null;
-  traumaAnswers: Record<number, number>;
-  quizBestScore: number | null;
-  quizTotalTaken: number;
-  healingProgress: number; // 0 to 100
+export interface LocalProgressV1 {
+  version: 1;
+  firstVisitDate: string; // YYYY-MM-DD
+  lastVisitDate: string;  // YYYY-MM-DD
+  latestTraumaResult?: TraumaResult;
+  traumaAnswers?: Record<string, string>; // questionId -> optionId
+  bestQuizScore: number;
+  completedQuizCount: number;
+  healingPercent: number; // 0 to 100
   healingDeclared: boolean;
-  unlockedAchievements: Record<string, string>; // id -> ISO timestamp
+  achievements: AchievementProgress[];
   memesGeneratedCount: number;
-  visitCount: number;
-  firstVisit: string;
-  lastVisit: string;
   soundEnabled: boolean;
 }
 

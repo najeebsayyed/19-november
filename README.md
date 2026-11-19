@@ -24,22 +24,23 @@ Then Travis Head, Pat Cummins, and the Australian cricket team intervened.
 ## ✨ Features & Architecture
 
 ### 1. ⏱️ Live Heartbreak Elapsed Counter
-- Dynamically computes the exact **Years, Months, Days, Hours, Minutes, and Seconds** elapsed since the final in **Asia/Kolkata (IST)** timezone.
-- Ticks in real time with high-precision calendar math accounting for leap years and month lengths.
+- Dynamically computes the exact **Years, Months, Days, Hours, Minutes, and Seconds** elapsed since 19 November 2023 (`2023-11-19T00:00:00+05:30`) in **Asia/Kolkata (IST)** timezone.
+- Isolated counter component (`ElapsedCounter.tsx`) preventing unnecessary re-renders of the hero section or application root.
 - Authentic scoreboard display: **India 240 All Out** vs **Australia 241/4 (43.0 ov)**.
 
 ### 2. 📜 The Night We Don't Talk About (Interactive Timeline)
-- Historically verified match memories:
+- Curated from a single centralized data module (`src/data/matchFacts.ts`):
   - 2:00 PM: Pat Cummins' promise to "silence 130,000 fans"
   - 3:15 PM: Rohit Sharma's flying 47 (31) blitz & Head's backwards catch
   - 4:30 PM: The middle-overs boundary drought (only 4 boundaries in 40 overs)
   - 5:45 PM: Bowled out for 240
   - 7:00 PM: Early hope at Australia 47/3
   - 9:45 PM: Travis Head's 137 off 120 balls & the Ahmedabad silence
-- Interactive moment spotlight with sound effects.
+- Interactive moment spotlight with synthesized audio effects.
 
 ### 3. 🩺 Trauma Assessment (Psychological Triage)
 - 5 weighted, relatable multiple-choice questions assessing your emotional damage.
+- Explicit "Continue" button flow on mobile preventing accidental skips.
 - Categorizes you into 4 official therapy tiers:
   - `0–24%`: **SLIGHTLY TRAUMATIZED** (Zen Fan)
   - `25–49%`: **EMOTIONALLY WOUNDED** (Bandaged Heart)
@@ -47,11 +48,13 @@ Then Travis Head, Pat Cummins, and the Australian cricket team intervened.
   - `75–100%`: **BEYOND RECOVERY** (Code Blue: Critical)
 - Dynamic prescription & clinical commentary.
 - Generates a **1200 × 630 downloadable PNG result card** via client-side canvas.
+- Full sharing suite: WhatsApp, X (Twitter), Web Share API, and clipboard copy.
 
 ### 4. 🧠 Cricket Memory Quiz (10/10 Historical Exam)
 - 10 historically verified questions randomized on every play.
+- Evaluated using stable question IDs and option IDs (not display indices).
 - Immediate visual and synthesized audio feedback on each answer with contextual trivia.
-- Tracks personal best score in LocalStorage.
+- Tracks personal best score in LocalStorage (`nov19:progress:v1`).
 - Funny tiered diagnoses: *Certified 19/11 Historian*, *Veteran Witness*, *Selective Coping*, or *Protective Amnesia Champion*.
 
 ### 5. 🎨 Therapeutic Meme Generator
@@ -72,13 +75,13 @@ Then Travis Head, Pat Cummins, and the Australian cricket team intervened.
 - Certified disclaimer: *"Medical accuracy: 0%. Emotional accuracy: questionable."*
 
 ### 7. 🏅 Trauma Achievements System
-6 unlockable achievement badges stored persistently:
+6 unlockable achievement badges stored persistently in `nov19:progress:v1`:
 - `FIRST_DIAGNOSIS`: Completed the trauma assessment.
 - `CRICKET_HISTORIAN`: Completed the 10-question memory quiz.
 - `PERFECT_MEMORY`: Scored a flawless 10/10 in the memory quiz.
 - `MEME_THERAPIST`: Generated and downloaded your first coping meme.
 - `NEVER_FORGET_1911`: Checked in and completed at least one therapy activity.
-- `STILL_STANDING`: Returned to the trauma center on a separate visit.
+- `STILL_STANDING`: Returned to the trauma center on a later local calendar day (`YYYY-MM-DD`).
 - Live toast notification with victory fanfare sound when an achievement unlocks.
 - Complete reset functionality for clearing local therapy records.
 
@@ -88,7 +91,7 @@ Then Travis Head, Pat Cummins, and the Australian cricket team intervened.
 - Sound toggle control with persistent state.
 
 ### 9. 📱 Mobile-First & Social Sharing
-- Optimized for mobile devices (360px to 430px+), tablets, and desktops.
+- Optimized for mobile viewports (320px, 360px, 390px, 430px, 768px, 1024px, 1440px).
 - Direct **WhatsApp** share with formatted text & emoji.
 - Direct **X (Twitter)** intent sharing.
 - Native **Web Share API** with automatic clipboard copy fallback.
@@ -103,12 +106,23 @@ Then Travis Head, Pat Cummins, and the Australian cricket team intervened.
 | **Build Tool** | [Vite 8](https://vite.dev/) with `@tailwindcss/vite` |
 | **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) with custom stadium atmosphere |
 | **Typography** | Space Grotesk (Headlines) & Plus Jakarta Sans (Body) |
-| **Icons** | [Lucide React](https://lucide.react.dev/) |
+| **Icons** | [Lucide React](https://lucide.react.dev/) + Custom SVG Icons |
 | **Effects** | [Canvas Confetti](https://www.npmjs.com/package/canvas-confetti) |
 | **Audio** | HTML5 Web Audio API Synthesizer |
 | **Graphics** | HTML5 Canvas 2D API (Meme & Result Card generation) |
-| **Persistence** | Versioned browser `localStorage` (`TRAUMA_CENTER_STATE_V1`) |
+| **Persistence** | Versioned browser `localStorage` (`nov19:progress:v1`) |
 | **Deployment** | [Vercel](https://vercel.com/) (Zero server dependencies) |
+
+---
+
+## 👨‍💻 Developer Attribution
+
+**Made with ❤️ by Najeeb Sayyed**  
+*"Built for every Indian cricket fan who still remembers 19 November."*
+
+- **Portfolio:** [https://najeebsayyed.in](https://najeebsayyed.in)
+- **LinkedIn:** [https://www.linkedin.com/in/najeebsayyed/](https://www.linkedin.com/in/najeebsayyed/)
+- **X (Twitter):** [https://x.com/iNajeebSayyed](https://x.com/iNajeebSayyed)
 
 ---
 
@@ -167,11 +181,8 @@ vercel
 
 1. Initialize git and commit:
    ```bash
-   git init
    git add .
-   git commit -m "feat: 19 November Trauma Center initial release"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/19-november.git
+   git commit -m "feat: complete 19 November Trauma Center application"
    git push -u origin main
    ```
 2. Go to [Vercel Dashboard](https://vercel.com/new).

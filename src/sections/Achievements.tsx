@@ -45,7 +45,7 @@ export const Achievements = ({
   const progressPercent = Math.round((unlockedCount / ACHIEVEMENTS_DATA.length) * 100);
 
   return (
-    <section id="achievements" className="py-24 px-4 relative overflow-hidden bg-[#030712]">
+    <section id="achievements" className="py-24 px-4 relative overflow-hidden bg-[#030712] scroll-mt-20">
       {/* Background glow */}
       <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -60,7 +60,7 @@ export const Achievements = ({
             YOUR TRAUMA ACHIEVEMENTS
           </h2>
           <p className="mt-3 max-w-xl mx-auto text-slate-400 text-sm sm:text-base">
-            Commemorate your progress through the 5 stages of grief. Badges persist in your browser.
+            Commemorate your progress through the 5 stages of grief. Badges persist on your device.
           </p>
 
           {/* Progress Tracker Pill */}
@@ -166,7 +166,7 @@ export const Achievements = ({
               </div>
 
               <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                This will clear your trauma diagnosis score, quiz score, healing progress, and locked/unlocked achievements from this device.
+                This will clear your trauma diagnosis score, quiz score, healing progress, and locked/unlocked achievements from this browser (`nov19:progress:v1`).
               </p>
 
               <div className="flex items-center justify-end gap-3">

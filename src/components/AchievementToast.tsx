@@ -48,7 +48,11 @@ export const AchievementToast = ({ onPlayUnlockSound }: AchievementToastProps) =
   if (!activeToast) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full animate-in fade-in slide-in-from-bottom-5 duration-300">
+    <div 
+      role="status" 
+      aria-live="polite" 
+      className="fixed bottom-6 right-6 z-50 max-w-sm w-full animate-in fade-in slide-in-from-bottom-5 duration-300"
+    >
       <div className="bg-slate-900 border-2 border-amber-500/80 rounded-2xl p-4 shadow-2xl shadow-amber-500/20 flex items-start gap-3 relative overflow-hidden backdrop-blur-md">
         {/* Top glowing edge */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500" />

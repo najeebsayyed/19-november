@@ -8,10 +8,10 @@ import {
   HeartCrack,
   Flame
 } from 'lucide-react';
-import type { UserProgress } from '../types';
+import type { LocalProgressV1 } from '../types';
 
 interface NavbarProps {
-  progress: UserProgress;
+  progress: LocalProgressV1;
   onToggleSound: () => void;
   onPlayClick: () => void;
 }
@@ -41,7 +41,7 @@ export const Navbar = ({
     { label: 'Badges', href: '#achievements' },
   ];
 
-  const unlockedCount = Object.keys(progress.unlockedAchievements || {}).length;
+  const unlockedCount = (progress.achievements || []).length;
 
   const handleNavClick = (href: string) => {
     onPlayClick();

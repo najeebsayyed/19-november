@@ -1,22 +1,25 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { UserProgress, AchievementId, TraumaCategory } from '../types';
+import type { LocalProgressV1, AchievementId, TraumaResult } from '../types';
 
-const STORAGE_KEY = 'TRAUMA_CENTER_STATE_V1';
+export const STORAGE_KEY = 'nov19:progress:v1';
 
-const INITIAL_PROGRESS: UserProgress = {
+export function getLocalDateString(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+const INITIAL_PROGRESS: LocalProgressV1 = {
   version: 1,
-  traumaScore: null,
-  traumaCategory: null,
-  traumaAnswers: {},
-  quizBestScore: null,
-  quizTotalTaken: 0,
-  healingProgress: 19, // symbolic 19%
+  firstVisitDate: getLocalDateString(),
+  lastVisitDate: getLocalDateString(),
+  bestQuizScore: 0,
+  completedQuizCount: 0,
+  healingPercent: 19, // symbolic default 19%
   healingDeclared: false,
-  unlockedAchievements: {},
+  achievements: [],
   memesGeneratedCount: 0,
-  visitCount: 1,
-  firstVisit: new Date().toISOString(),
-  lastVisit: new Date().toISOString(),
   soundEnabled: true,
 };
 
@@ -30,97 +33,103 @@ export function dispatchAchievementUnlocked(id: AchievementId) {
 }
 
 export function useUserProgress() {
-  const [progress, setProgress] = useState<UserProgress>(() => {
+  const [progress, setProgress] = useState<LocalProgressV1>(() => {
     if (typeof window === 'undefined') return INITIAL_PROGRESS;
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (!stored) return INITIAL_PROGRESS;
       const parsed = JSON.parse(stored);
-      if (parsed.version !== INITIAL_PROGRESS.version) {
-        return { ...INITIAL_PROGRESS, ...parsed, version: INITIAL_PROGRESS.version };
+      if (!parsed || typeof parsed !== 'object' || parsed.version !== 1) {
+        return INITIAL_PROGRESS;
       }
-      return { ...INITIAL_PROGRESS, ...parsed };
+      return {
+        ...INITIAL_PROGRESS,
+        ...parsed,
+        achievements: Array.isArray(parsed.achievements) ? parsed.achievements : [],
+      };
     } catch {
       return INITIAL_PROGRESS;
     }
   });
 
-  // Save to localStorage on state changes
+  // Save to localStorage whenever progress state updates
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
     } catch (e) {
-      console.warn('Failed to save to localStorage:', e);
+      console.warn('LocalStorage save failed, running in-memory fallback:', e);
     }
   }, [progress]);
 
-  // Check visit history on mount
+  // Check visit date on mount for STILL_STANDING achievement
   useEffect(() => {
     try {
+      const today = getLocalDateString();
       const stored = localStorage.getItem(STORAGE_KEY);
-      const now = new Date();
       if (stored) {
-        const parsed: UserProgress = JSON.parse(stored);
-        const lastVisitDate = new Date(parsed.lastVisit || parsed.firstVisit);
-        // If last visit was at least 5 minutes ago or different day
-        const diffMs = now.getTime() - lastVisitDate.getTime();
-        const isSeparateVisit = diffMs > 5 * 60 * 1000;
+        const parsed = JSON.parse(stored);
+        const firstVisit = parsed.firstVisitDate || today;
 
-        const newVisitCount = isSeparateVisit ? (parsed.visitCount || 1) + 1 : (parsed.visitCount || 1);
+        // Check if today is strictly a later calendar date than the first visit date
+        const isLaterCalendarDay = today > firstVisit;
+        const hasStillStanding = (parsed.achievements || []).some(
+          (a: { id: string }) => a.id === 'STILL_STANDING'
+        );
 
-        const updated: UserProgress = {
-          ...parsed,
-          visitCount: newVisitCount,
-          lastVisit: now.toISOString(),
-        };
+        let updatedAchievements = parsed.achievements || [];
 
-        // If returned on a separate visit, unlock STILL_STANDING
-        if (newVisitCount >= 2 && !parsed.unlockedAchievements?.['STILL_STANDING']) {
-          updated.unlockedAchievements = {
-            ...(parsed.unlockedAchievements || {}),
-            STILL_STANDING: now.toISOString(),
-          };
+        if (isLaterCalendarDay && !hasStillStanding) {
+          const unlockRecord = { id: 'STILL_STANDING' as AchievementId, unlockedAt: new Date().toISOString() };
+          updatedAchievements = [...updatedAchievements, unlockRecord];
           dispatchAchievementUnlocked('STILL_STANDING');
         }
+
+        const updated: LocalProgressV1 = {
+          ...parsed,
+          lastVisitDate: today,
+          achievements: updatedAchievements,
+        };
 
         setProgress(updated);
       }
     } catch {
-      // ignore
+      // safe fallback
     }
   }, []);
 
+  const hasAchievement = useCallback((id: AchievementId) => {
+    return progress.achievements.some((a) => a.id === id);
+  }, [progress.achievements]);
+
   const unlockAchievement = useCallback((id: AchievementId) => {
     setProgress((prev) => {
-      if (prev.unlockedAchievements[id]) return prev; // already unlocked
+      if (prev.achievements.some((a) => a.id === id)) return prev;
 
       const now = new Date().toISOString();
-      const updated = {
-        ...prev,
-        unlockedAchievements: {
-          ...prev.unlockedAchievements,
-          [id]: now,
-        },
-      };
+      const newAchievement = { id, unlockedAt: now };
+      let updatedList = [...prev.achievements, newAchievement];
 
-      // Also ensure NEVER_FORGET_1911 is unlocked on any completed activity
+      // Any completed activity automatically unlocks NEVER_FORGET_1911
       if (id !== 'NEVER_FORGET_1911' && id !== 'STILL_STANDING') {
-        if (!updated.unlockedAchievements['NEVER_FORGET_1911']) {
-          updated.unlockedAchievements['NEVER_FORGET_1911'] = now;
+        if (!updatedList.some((a) => a.id === 'NEVER_FORGET_1911')) {
+          updatedList = [...updatedList, { id: 'NEVER_FORGET_1911', unlockedAt: now }];
           dispatchAchievementUnlocked('NEVER_FORGET_1911');
         }
       }
 
       dispatchAchievementUnlocked(id);
-      return updated;
+
+      return {
+        ...prev,
+        achievements: updatedList,
+      };
     });
   }, []);
 
-  const saveTraumaResult = useCallback((score: number, category: TraumaCategory, answers: Record<number, number>) => {
+  const saveTraumaResult = useCallback((result: TraumaResult, answers: Record<string, string>) => {
     setProgress((prev) => ({
       ...prev,
-      traumaScore: score,
-      traumaCategory: category,
+      latestTraumaResult: result,
       traumaAnswers: answers,
     }));
     unlockAchievement('FIRST_DIAGNOSIS');
@@ -128,11 +137,11 @@ export function useUserProgress() {
 
   const saveQuizScore = useCallback((score: number) => {
     setProgress((prev) => {
-      const best = prev.quizBestScore === null ? score : Math.max(prev.quizBestScore, score);
+      const best = Math.max(prev.bestQuizScore, score);
       return {
         ...prev,
-        quizBestScore: best,
-        quizTotalTaken: prev.quizTotalTaken + 1,
+        bestQuizScore: best,
+        completedQuizCount: prev.completedQuizCount + 1,
       };
     });
 
@@ -153,7 +162,7 @@ export function useUserProgress() {
   const saveHealingProgress = useCallback((val: number, declared: boolean = false) => {
     setProgress((prev) => ({
       ...prev,
-      healingProgress: Math.max(0, Math.min(100, val)),
+      healingPercent: Math.max(0, Math.min(100, val)),
       healingDeclared: declared ? true : prev.healingDeclared,
     }));
     if (declared) {
@@ -169,22 +178,29 @@ export function useUserProgress() {
   }, []);
 
   const resetProgress = useCallback(() => {
-    const clean: UserProgress = {
-      ...INITIAL_PROGRESS,
-      visitCount: 1,
-      firstVisit: new Date().toISOString(),
-      lastVisit: new Date().toISOString(),
-    };
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
+      localStorage.removeItem(STORAGE_KEY);
     } catch {
       // ignore
     }
-    setProgress(clean);
+    const fresh: LocalProgressV1 = {
+      ...INITIAL_PROGRESS,
+      firstVisitDate: getLocalDateString(),
+      lastVisitDate: getLocalDateString(),
+    };
+    setProgress(fresh);
   }, []);
+
+  // Map achievements for quick lookup { [id]: ISO string }
+  const unlockedMap = progress.achievements.reduce<Record<string, string>>((acc, item) => {
+    acc[item.id] = item.unlockedAt;
+    return acc;
+  }, {});
 
   return {
     progress,
+    unlockedMap,
+    hasAchievement,
     unlockAchievement,
     saveTraumaResult,
     saveQuizScore,

@@ -15,6 +15,7 @@ import { AchievementToast } from './components/AchievementToast';
 export function App() {
   const {
     progress,
+    unlockedMap,
     saveTraumaResult,
     saveQuizScore,
     saveMemeGenerated,
@@ -50,7 +51,7 @@ export function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 w-full">
-        {/* 1. Hero Section */}
+        {/* 1. Hero Section with isolated elapsed-time counter */}
         <Hero
           onCheckTrauma={() => scrollToSection('assessment')}
           onReliveHeartbreak={() => scrollToSection('story')}
@@ -64,7 +65,7 @@ export function App() {
 
         {/* 3. Trauma Assessment */}
         <TraumaAssessment
-          persistedScore={progress.traumaScore}
+          persistedResult={progress.latestTraumaResult}
           onSaveResult={saveTraumaResult}
           onPlayClick={playClick}
           onPlayWicket={playWicket}
@@ -73,7 +74,7 @@ export function App() {
 
         {/* 4. Cricket Memory Quiz */}
         <MemoryQuiz
-          bestScore={progress.quizBestScore}
+          bestScore={progress.bestQuizScore}
           onSaveScore={saveQuizScore}
           onPlayClick={playClick}
           onPlayBatHit={playBatHit}
@@ -90,7 +91,7 @@ export function App() {
 
         {/* 6. Healing Meter */}
         <HealingMeter
-          initialProgress={progress.healingProgress}
+          initialProgress={progress.healingPercent}
           isDeclared={progress.healingDeclared}
           onSaveProgress={saveHealingProgress}
           onPlayClick={playClick}
@@ -99,7 +100,7 @@ export function App() {
 
         {/* 7. Achievements System */}
         <Achievements
-          unlockedMap={progress.unlockedAchievements}
+          unlockedMap={unlockedMap}
           onResetProgress={resetProgress}
           onPlayClick={playClick}
           onPlayWicket={playWicket}
@@ -111,7 +112,7 @@ export function App() {
         />
       </main>
 
-      {/* Footer */}
+      {/* Footer with Developer Attribution */}
       <Footer
         onPlayClick={playClick}
       />

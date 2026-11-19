@@ -1,6 +1,6 @@
 import React from 'react';
-import { useElapsedTime } from '../hooks/useElapsedTime';
-import { HeartCrack, Clock, ArrowDown, Activity } from 'lucide-react';
+import { ElapsedCounter } from './ElapsedCounter';
+import { HeartCrack, ArrowDown, Activity } from 'lucide-react';
 
 interface HeroProps {
   onCheckTrauma: () => void;
@@ -11,8 +11,6 @@ export const Hero: React.FC<HeroProps> = ({
   onCheckTrauma,
   onReliveHeartbreak,
 }) => {
-  const elapsed = useElapsedTime();
-
   return (
     <section className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 px-4 overflow-hidden">
       {/* Stadium Background Atmosphere */}
@@ -33,7 +31,7 @@ export const Hero: React.FC<HeroProps> = ({
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
-        {/* Top Label */}
+        {/* Eyebrow Label */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-sky-500/30 text-sky-400 text-xs sm:text-sm font-bold tracking-widest uppercase mb-6 shadow-lg shadow-sky-500/10">
           <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
           <span>THE UNOFFICIAL INDIAN CRICKET FANS' TRAUMA CENTER</span>
@@ -44,14 +42,14 @@ export const Hero: React.FC<HeroProps> = ({
           19 NOVEMBER
         </h1>
 
-        {/* Subheading */}
+        {/* Subheading / Tagline */}
         <h2 className="mt-3 font-display font-extrabold text-xl sm:text-3xl md:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-sky-400 tracking-wide">
-          10 wins. 1 final. {elapsed.years} years. Still not recovered.
+          10 wins. 1 final. 3 years. Still not recovered.
         </h2>
 
         {/* Supporting text */}
         <p className="mt-4 max-w-2xl text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed font-normal">
-          "Remember when we were just one match away from lifting the World Cup? Yeah. We remember too."
+          "Remember when we were one match away from lifting the World Cup? Yeah. We remember too."
         </p>
 
         {/* Call to Actions */}
@@ -73,50 +71,14 @@ export const Hero: React.FC<HeroProps> = ({
           </button>
         </div>
 
-        {/* Live Elapsed Time Counter */}
-        <div className="mt-12 w-full max-w-3xl bg-slate-950/80 border border-slate-800/90 rounded-2xl p-5 sm:p-6 backdrop-blur-md shadow-2xl">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800/80">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-              <Clock className="w-4 h-4 text-sky-400" />
-              <span>Time Since The Heartbreak</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-              <span>LIVE IST TICK</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
-            {[
-              { label: 'YEARS', value: elapsed.years },
-              { label: 'MONTHS', value: elapsed.months },
-              { label: 'DAYS', value: elapsed.days },
-              { label: 'HOURS', value: elapsed.hours },
-              { label: 'MINUTES', value: elapsed.minutes },
-              { label: 'SECONDS', value: elapsed.seconds },
-            ].map((unit) => (
-              <div 
-                key={unit.label}
-                className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex flex-col items-center justify-center shadow-inner group hover:border-sky-500/40 transition-colors"
-              >
-                <span className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight group-hover:text-sky-400 transition-colors">
-                  {String(unit.value).padStart(2, '0')}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400 tracking-wider mt-1">
-                  {unit.label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-3 text-xs text-slate-400 italic">
-            "Every second counts, yet none of them heal the memory of that Sunday evening."
-          </p>
+        {/* Live Elapsed-Time Counter (Isolated Component) */}
+        <div className="mt-12 w-full flex justify-center">
+          <ElapsedCounter />
         </div>
 
         {/* Dramatic Scoreboard Display */}
         <div className="mt-8 w-full max-w-2xl bg-gradient-to-r from-slate-950 via-[#0a0f1d] to-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl relative overflow-hidden">
-          {/* Subtle cricket ball seam glow */}
+          {/* Subtle seam glow */}
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-60" />
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">

@@ -22,7 +22,7 @@ import { openWhatsAppShare, openTwitterShare, shareContent } from '../utils/shar
 import confetti from 'canvas-confetti';
 
 interface MemoryQuizProps {
-  bestScore: number | null;
+  bestScore: number;
   onSaveScore: (score: number) => void;
   onPlayClick: () => void;
   onPlayBatHit: () => void;
@@ -40,20 +40,19 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
 }) => {
   const [shuffledQuestions, setShuffledQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
 
-  // Initialize and randomize questions on mount or replay
+  // Initialize and randomize question order on start or replay
   const startQuiz = () => {
-    // Shuffle copy of questions
     const shuffled = [...CRICKET_QUIZ_QUESTIONS].sort(() => Math.random() - 0.5);
     setShuffledQuestions(shuffled);
     setCurrentIndex(0);
-    setSelectedOption(null);
+    setSelectedOptionId(null);
     setHasAnswered(false);
     setScore(0);
     setIsCompleted(false);
@@ -66,13 +65,13 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
 
   const currentQ = shuffledQuestions[currentIndex];
 
-  const handleSelectOption = (idx: number) => {
+  const handleSelectOption = (optionId: string) => {
     if (hasAnswered || !currentQ) return;
 
-    setSelectedOption(idx);
+    setSelectedOptionId(optionId);
     setHasAnswered(true);
 
-    const isCorrect = idx === currentQ.correctIndex;
+    const isCorrect = optionId === currentQ.correctAnswerId;
     if (isCorrect) {
       onPlayBatHit();
       setScore((prev) => prev + 1);
@@ -85,7 +84,7 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
     onPlayClick();
     if (currentIndex < shuffledQuestions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
-      setSelectedOption(null);
+      setSelectedOptionId(null);
       setHasAnswered(false);
     } else {
       // Quiz Complete
@@ -127,7 +126,7 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
   };
 
   return (
-    <section id="quiz" className="py-24 px-4 relative overflow-hidden bg-gradient-to-b from-[#030712] via-[#080d19] to-[#030712]">
+    <section id="quiz" className="py-24 px-4 relative overflow-hidden bg-gradient-to-b from-[#030712] via-[#080d19] to-[#030712] scroll-mt-20">
       {/* Background glow */}
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-sky-600/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -145,8 +144,8 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
             Let's test how closely you watched the final. 10 historically accurate questions.
           </p>
 
-          {bestScore !== null && (
-            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">
+          {bestScore > 0 && (
+            <div className="mt-4 inline-flex items-center gap-2 px-3.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">
               <Award className="w-4 h-4" />
               <span>Personal Best: {bestScore} / 10</span>
             </div>
@@ -186,9 +185,9 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
                   let styleClass = 'bg-slate-900/80 border-slate-800/90 text-slate-200 hover:border-slate-600 hover:bg-slate-850';
 
                   if (hasAnswered) {
-                    if (oIdx === currentQ.correctIndex) {
+                    if (opt.id === currentQ.correctAnswerId) {
                       styleClass = 'bg-emerald-950/60 border-emerald-500 text-emerald-200 shadow-lg shadow-emerald-900/20';
-                    } else if (oIdx === selectedOption) {
+                    } else if (opt.id === selectedOptionId) {
                       styleClass = 'bg-red-950/60 border-red-500 text-red-200';
                     } else {
                       styleClass = 'bg-slate-900/40 border-slate-800/40 text-slate-500 opacity-50';
@@ -197,22 +196,22 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
 
                   return (
                     <button
-                      key={opt}
+                      key={opt.id}
                       disabled={hasAnswered}
-                      onClick={() => handleSelectOption(oIdx)}
+                      onClick={() => handleSelectOption(opt.id)}
                       className={`w-full text-left p-4 sm:p-5 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${styleClass}`}
                     >
                       <div className="flex items-center gap-3 pr-2">
                         <span className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-300">
                           {String.fromCharCode(65 + oIdx)}
                         </span>
-                        <span className="font-display font-bold text-sm sm:text-base">{opt}</span>
+                        <span className="font-display font-bold text-sm sm:text-base">{opt.text}</span>
                       </div>
 
-                      {hasAnswered && oIdx === currentQ.correctIndex && (
+                      {hasAnswered && opt.id === currentQ.correctAnswerId && (
                         <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
                       )}
-                      {hasAnswered && oIdx === selectedOption && oIdx !== currentQ.correctIndex && (
+                      {hasAnswered && opt.id === selectedOptionId && opt.id !== currentQ.correctAnswerId && (
                         <XCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
                       )}
                     </button>
@@ -222,9 +221,13 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
 
               {/* Explanation & Context Box (shown immediately after answering) */}
               {hasAnswered && (
-                <div className="my-6 bg-slate-900/95 border border-slate-800 rounded-2xl p-5 animate-in fade-in duration-200">
+                <div 
+                  role="status" 
+                  aria-live="polite" 
+                  className="my-6 bg-slate-900/95 border border-slate-800 rounded-2xl p-5 animate-in fade-in duration-200"
+                >
                   <div className="flex items-center gap-2 mb-2">
-                    {selectedOption === currentQ.correctIndex ? (
+                    {selectedOptionId === currentQ.correctAnswerId ? (
                       <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1">
                         <CheckCircle2 className="w-4 h-4" /> Spot on!
                       </span>
@@ -293,7 +296,7 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
                   className="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-display font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-sky-500/25 flex items-center gap-2 cursor-pointer transition-all"
                 >
                   <RotateCcw className="w-4 h-4" />
-                  <span>Replay Quiz</span>
+                  <span>Play Again</span>
                 </button>
               </div>
 

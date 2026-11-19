@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import type { ElapsedTime } from '../types';
 
-// The final took place on 19 November 2023 at Narendra Modi Stadium, Ahmedabad.
-// Match officially started at 14:00 IST and ended around 22:00 IST on 19 Nov 2023.
-const HEARTBREAK_DATE_MS = new Date('2023-11-19T22:00:00+05:30').getTime();
+// The start instant as defined in product.md:
+// "Start instant: 19 November 2023, 00:00:00 in Asia/Kolkata"
+const START_INSTANT_MS = new Date('2023-11-19T00:00:00+05:30').getTime();
 
 export function calculateTimeDifference(now: Date = new Date()): ElapsedTime {
-  const start = new Date(HEARTBREAK_DATE_MS);
+  const start = new Date(START_INSTANT_MS);
   
-  // Calculate calendar difference
+  // Accurate calendar difference
   let years = now.getFullYear() - start.getFullYear();
   let months = now.getMonth() - start.getMonth();
   let days = now.getDate() - start.getDate();
@@ -29,7 +29,7 @@ export function calculateTimeDifference(now: Date = new Date()): ElapsedTime {
     days--;
   }
   if (days < 0) {
-    // Get days in previous month
+    // Days in previous month
     const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
     days += prevMonth.getDate();
     months--;
@@ -39,7 +39,6 @@ export function calculateTimeDifference(now: Date = new Date()): ElapsedTime {
     years--;
   }
 
-  // Fallbacks if future or same time
   const safeYears = Math.max(0, years);
   const safeMonths = Math.max(0, months);
   const safeDays = Math.max(0, days);
@@ -64,7 +63,6 @@ export function useElapsedTime(): ElapsedTime {
   const [elapsed, setElapsed] = useState<ElapsedTime>(() => calculateTimeDifference());
 
   useEffect(() => {
-    // Update every second
     const interval = setInterval(() => {
       setElapsed(calculateTimeDifference());
     }, 1000);
