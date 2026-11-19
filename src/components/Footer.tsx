@@ -5,6 +5,8 @@ interface FooterProps {
   onPlayClick: () => void;
 }
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export const Footer = ({ onPlayClick }: FooterProps) => {
   const scrollToTop = () => {
     onPlayClick();
@@ -106,7 +108,7 @@ export const Footer = ({ onPlayClick }: FooterProps) => {
 
         {/* Creator tagline */}
         <div className="text-xs text-slate-500">
-          <span>Created with tears, chai, and unending love for Indian cricket. © {new Date().getFullYear()}</span>
+          <span>Created with tears, chai, and unending love for Indian cricket. © {CURRENT_YEAR}</span>
         </div>
       </div>
     </footer>

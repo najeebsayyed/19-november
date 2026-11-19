@@ -36,16 +36,33 @@ export function useUserProgress() {
   const [progress, setProgress] = useState<LocalProgressV1>(() => {
     if (typeof window === 'undefined') return INITIAL_PROGRESS;
     try {
+      const today = getLocalDateString();
       const stored = localStorage.getItem(STORAGE_KEY);
       if (!stored) return INITIAL_PROGRESS;
       const parsed = JSON.parse(stored);
       if (!parsed || typeof parsed !== 'object' || parsed.version !== 1) {
         return INITIAL_PROGRESS;
       }
+
+      const firstVisit = parsed.firstVisitDate || today;
+      const isLaterCalendarDay = today > firstVisit;
+      let updatedAchievements = Array.isArray(parsed.achievements) ? [...parsed.achievements] : [];
+      const hasStillStanding = updatedAchievements.some(
+        (a: { id: string }) => a.id === 'STILL_STANDING'
+      );
+
+      if (isLaterCalendarDay && !hasStillStanding) {
+        updatedAchievements.push({
+          id: 'STILL_STANDING' as AchievementId,
+          unlockedAt: new Date().toISOString(),
+        });
+      }
+
       return {
         ...INITIAL_PROGRESS,
         ...parsed,
-        achievements: Array.isArray(parsed.achievements) ? parsed.achievements : [],
+        lastVisitDate: today,
+        achievements: updatedAchievements,
       };
     } catch {
       return INITIAL_PROGRESS;
@@ -60,42 +77,6 @@ export function useUserProgress() {
       console.warn('LocalStorage save failed, running in-memory fallback:', e);
     }
   }, [progress]);
-
-  // Check visit date on mount for STILL_STANDING achievement
-  useEffect(() => {
-    try {
-      const today = getLocalDateString();
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        const firstVisit = parsed.firstVisitDate || today;
-
-        // Check if today is strictly a later calendar date than the first visit date
-        const isLaterCalendarDay = today > firstVisit;
-        const hasStillStanding = (parsed.achievements || []).some(
-          (a: { id: string }) => a.id === 'STILL_STANDING'
-        );
-
-        let updatedAchievements = parsed.achievements || [];
-
-        if (isLaterCalendarDay && !hasStillStanding) {
-          const unlockRecord = { id: 'STILL_STANDING' as AchievementId, unlockedAt: new Date().toISOString() };
-          updatedAchievements = [...updatedAchievements, unlockRecord];
-          dispatchAchievementUnlocked('STILL_STANDING');
-        }
-
-        const updated: LocalProgressV1 = {
-          ...parsed,
-          lastVisitDate: today,
-          achievements: updatedAchievements,
-        };
-
-        setProgress(updated);
-      }
-    } catch {
-      // safe fallback
-    }
-  }, []);
 
   const hasAchievement = useCallback((id: AchievementId) => {
     return progress.achievements.some((a) => a.id === id);

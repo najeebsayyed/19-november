@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   CRICKET_QUIZ_QUESTIONS, 
   evaluateQuizResult 
@@ -38,7 +38,9 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
   onPlayWicket,
   onPlayCelebration,
 }) => {
-  const [shuffledQuestions, setShuffledQuestions] = useState<QuizQuestion[]>([]);
+  const [shuffledQuestions, setShuffledQuestions] = useState<QuizQuestion[]>(() =>
+    [...CRICKET_QUIZ_QUESTIONS].sort(() => Math.random() - 0.5)
+  );
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState<boolean>(false);
@@ -58,10 +60,6 @@ export const MemoryQuiz: React.FC<MemoryQuizProps> = ({
     setIsCompleted(false);
     setQuizResult(null);
   };
-
-  useEffect(() => {
-    startQuiz();
-  }, []);
 
   const currentQ = shuffledQuestions[currentIndex];
 
