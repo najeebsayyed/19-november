@@ -1,23 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
     <radialGradient id="ballGrad" cx="35%" cy="35%" r="65%">
-      <stop offset="0%" stop-color="#ef4444" />
-      <stop offset="60%" stop-color="#b91c1c" />
-      <stop offset="100%" stop-color="#7f1d1d" />
+      <stop offset="0%" stop-color="#f87171" />
+      <stop offset="40%" stop-color="#dc2626" />
+      <stop offset="100%" stop-color="#991b1b" />
     </radialGradient>
     <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
     </filter>
   </defs>
+  <!-- Outer high-visibility ring for dark and light tabs -->
+  <circle cx="32" cy="32" r="30" fill="#030712" stroke="#38bdf8" stroke-width="2" />
   <!-- Ball Base -->
-  <circle cx="32" cy="32" r="28" fill="url(#ballGrad)" filter="url(#glow)" />
+  <circle cx="32" cy="32" r="26" fill="url(#ballGrad)" />
   <!-- Heartbreak / Seam Zigzag -->
-  <path d="M 32 4 C 36 12, 28 18, 33 24 L 29 32 L 35 40 L 29 48 C 34 54, 30 58, 32 60" 
-        stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 32 6 C 35 13, 29 18, 33 24 L 29 32 L 35 40 L 29 48 C 33 53, 30 56, 32 58" 
+        stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
   <!-- Seam Stitches -->
-  <path d="M 30 10 L 35 12 M 28 17 L 33 19 M 31 23 L 36 25 M 27 29 L 32 31 M 32 37 L 37 39 M 27 43 L 32 45 M 31 49 L 36 51 M 29 55 L 34 57" 
-        stroke="#fef08a" stroke-width="1.2" stroke-linecap="round" />
-  <!-- Tear drop in blue (cricket blue tear) -->
-  <path d="M 46 22 C 46 22, 52 30, 52 34 C 52 37.3 49.3 40 46 40 C 42.7 40 40 37.3 40 34 C 40 30, 46 22, 46 22 Z" 
-        fill="#38bdf8" opacity="0.9" />
+  <path d="M 28 11 L 34 13 M 27 18 L 33 20 M 31 23 L 37 25 M 26 29 L 32 31 M 32 37 L 38 39 M 26 43 L 32 45 M 31 49 L 37 51 M 28 54 L 34 56" 
+        stroke="#fef08a" stroke-width="1.8" stroke-linecap="round" />
+  <!-- Glowing blue cricket tear drop -->
+  <path d="M 44 20 C 44 20, 52 30, 52 35 C 52 39.4 48.4 43 44 43 C 39.6 43 36 39.4 36 35 C 36 30, 44 20, 44 20 Z" 
+        fill="#38bdf8" stroke="#ffffff" stroke-width="1" />
 </svg>

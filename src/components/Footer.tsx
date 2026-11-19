@@ -1,5 +1,5 @@
-import { Heart, ArrowUp, ShieldAlert, Globe, ExternalLink } from 'lucide-react';
-import { XIcon, LinkedinIcon } from './Icons';
+import { Heart, ArrowUp, ShieldAlert, Globe } from 'lucide-react';
+import { XIcon } from './Icons';
 
 interface FooterProps {
   onPlayClick: () => void;
@@ -60,7 +60,7 @@ export const Footer = ({ onPlayClick }: FooterProps) => {
           <ArrowUp className="w-4 h-4" />
         </button>
 
-        {/* Tasteful Developer Attribution (Phase 6) */}
+        {/* Tasteful Developer Attribution */}
         <div className="w-full max-w-xl py-6 mb-6 border-t border-b border-slate-800/80 flex flex-col items-center">
           <div className="text-sm font-semibold text-slate-200 flex items-center gap-1.5 mb-1.5">
             <span>Made with</span>
@@ -80,46 +80,26 @@ export const Footer = ({ onPlayClick }: FooterProps) => {
             "Built for every Indian cricket fan who still remembers 19 November."
           </p>
 
-          {/* Social Profiles & Contact */}
+          {/* Social Profiles & Website */}
           <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
             <a
               href="https://najeebsayyed.in"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-200 hover:text-white transition-all font-medium"
             >
               <Globe className="w-3.5 h-3.5 text-sky-400" />
-              <span>Portfolio</span>
-            </a>
-
-            <a
-              href="https://www.linkedin.com/in/najeebsayyed/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all"
-            >
-              <LinkedinIcon className="w-3.5 h-3.5 text-blue-400" />
-              <span>LinkedIn</span>
+              <span>My Website</span>
             </a>
 
             <a
               href="https://x.com/iNajeebSayyed"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-200 hover:text-white transition-all font-medium"
             >
               <XIcon className="w-3.5 h-3.5 text-slate-300" />
               <span>X (Twitter)</span>
-            </a>
-
-            <a
-              href="https://najeebsayyed.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-sky-300 transition-all text-[11px]"
-            >
-              <span>Contact Developer</span>
-              <ExternalLink className="w-3 h-3" />
             </a>
           </div>
         </div>

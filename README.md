@@ -120,8 +120,7 @@ Then Travis Head, Pat Cummins, and the Australian cricket team intervened.
 **Made with ❤️ by Najeeb Sayyed**  
 *"Built for every Indian cricket fan who still remembers 19 November."*
 
-- **Portfolio:** [https://najeebsayyed.in](https://najeebsayyed.in)
-- **LinkedIn:** [https://www.linkedin.com/in/najeebsayyed/](https://www.linkedin.com/in/najeebsayyed/)
+- **My Website:** [https://najeebsayyed.in](https://najeebsayyed.in)
 - **X (Twitter):** [https://x.com/iNajeebSayyed](https://x.com/iNajeebSayyed)
 
 ---
